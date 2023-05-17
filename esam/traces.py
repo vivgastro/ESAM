@@ -15,21 +15,22 @@ def mask_to_trace(mask):
     and makes a trace out of it
     '''
     trace = []
-    min_start = 0
+    prev_off = 0
+    nchan = len(mask)
     for ichan, chan_data in enumerate(mask):
         idxs = np.where(chan_data > 0)[0]
         assert len(idxs) > 0, f"Mask cannot be empty! Found to be empty for ichan {ichan}"
         start, end = idxs[0], idxs[-1]
         kernel = chan_data[idxs[0]:idxs[-1] + 1]
+       
+        if ichan == 0:
+            prev_off = idxs[0]
 
-        if ichan ==0:
-            min_start = idxs[0]
-            offset = 0
-        else:
-            offset = int(idxs[0] - min_start )
+        offset = int(idxs[0] - prev_off)
+        prev_off = idxs[0]
 
         trace.append([offset, kernel])
-
+    trace[0][0] = None
     return trace
 
 def digitize_trace(trace, nbits=1):

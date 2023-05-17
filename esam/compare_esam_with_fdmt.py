@@ -5,23 +5,43 @@ import craco.search_pipeline
 from traces import *
 from esam import EsamTree
 import argparse
+import matplotlib.pyplot as plt
 
 def populate_ESAM_tree_with_masks(esam_tree, masks):
     trace_ids = []
     for mask in masks:
         if mask.ndim == 3:
             mask = mask.sum(axis=0).real    #Data must be nbl, nf, nt shape, so sum along the bl axis
+            #mask = mask[::-1]
         trace = mask_to_trace(mask)
+        #print(f"Trace is {trace}")
         trace = digitize_trace(trace)
+        #print(f"Digitized trace is {trace}")
         trace_id = esam_tree.get_trace_pid(trace)
+        #print(f"Trace id is {trace_id}")
         trace_ids.append(trace_id)
 
     return trace_ids
 
+def get_fake_block(nf =8 , nt = 16):
+    block = np.zeros((nf, nt))
+    print(f"Block's shape is - {block.shape}")
+    block[0:2, 10] = 1
+    block[2, 9:10] = 1
+    block[3:5, 9] = 1
+    block[5, 8:9] = 1
+    block[5:, 8] = 1
+
+    plt.figure()
+    plt.imshow(block, aspect='auto', origin='lower')
+    plt.show()
+
+    yield block
 
 
 def main():
     args = get_parser()
+    #'''
     f = uvfits.open(args.fits_file)
     values = craco.search_pipeline.get_parser().parse_args([])
     values.uv = args.fits_file
@@ -29,16 +49,24 @@ def main():
 
     plan = craco_plan.PipelinePlan(f, values)
     blocker = FV(plan, args.injection_file).get_fake_data_block()
+    #'''
+    #my_nf = 8
+    #blocker = get_fake_block(nf = my_nf)
+
     esam_tree = EsamTree(plan.nf)
     trace_ids = populate_ESAM_tree_with_masks(esam_tree, blocker)
 
     blocker = FV(plan, args.injection_file).get_fake_data_block()
+    #blocker = get_fake_block(nf = my_nf)
     thefdmt = FDMT.Fdmt(f_min = plan.fmin, f_off = plan.foff, n_f = plan.nf, max_dt = plan.nd, n_t = plan.nt, history_dtype=np.float64)
     true_signals = []
     fdmt_signals = []
     esam_signals = []
     for iblock, block in enumerate(blocker):
-        data = block.real.sum(axis=0)
+        if block.ndim == 3:
+            data = block.real.sum(axis=0)
+        else:
+            data = block
         fdmtout = thefdmt(data)
         esamout = esam_tree(data)
 
@@ -80,6 +108,7 @@ def get_parser():
     a.add_argument("-injection_file", type=str, help="Path to the injection file")
     a.add_argument("-fits_file", type=str, help="Path to the fits file that you need to instantiate the plan", default="/home/gup037/tmp/frb_d0_t0_a1_sninf_lm00.fits")
     a.add_argument("-ndm", type=int, help="Ndm for the FDMT to compute", default=256)
+    a.add_argument("-plot", action='store_true', help="Show each block", default=False)
     args = a.parse_args()
 
     return args

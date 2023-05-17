@@ -1,17 +1,20 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 class IterProduct:
-    def __init__(self, pid_lower, pid_upper, offset):
+    def __init__(self, pid_lower, pid_upper, offset, cumsum):
         self.pid_lower = pid_lower
         self.pid_upper = pid_upper
         self.offset = offset
+        self.cumsum = cumsum
 
     def __str__(self):
         s = f"IterProduct with pid_lower={self.pid_lower}, pid_upper={self.pid_upper}, offset={self.offset}"
         return s
 
     def __repr__(self):
-        r = f"l{self.pid_lower}_u{self.pid_upper}_o{offset}"
+        r = f"l{self.pid_lower}_u{self.pid_upper}_o{self.offset}"
+        return r
 
     def __eq__(self, other):
         if isinstance(other, IterProduct):
@@ -51,7 +54,22 @@ class EndProduct:
         din: np.ndarray
             1-D array on which the Endproduct has to be executed
         '''
-        return np.convolve(din, self.kernel, mode='same')
+        #print(type(din), type(self.kernel))
+        #print( din.shape, self.kernel.shape)
+        out = np.zeros_like(din)
+        kernel_size = len(self.kernel)
+        for isamp in range(din.size):
+            if isamp + kernel_size-1 == din.size:
+                break
+            out[isamp] = np.sum(din[isamp : isamp + kernel_size] * self.kernel)
+
+        #out =  np.convolve(din, self.kernel, mode='same')
+        '''
+        plt.figure()
+        plt.plot(out)
+        plt.show()
+        '''
+        return out 
 
     
 
@@ -72,7 +90,7 @@ class EsamTree:
             self.lower = self.__class__(nchan // 2, 2*ichan)
         
     def __str__(self):
-        s = f'Nchan={self.nchan} chan={self._ichan} ndm={self.ndm}'
+        s = f'Nchan={self.nchan} chan={self._ichan} nprod={self.ndm}'
         return s
     
     __repr__ = __str__
@@ -101,7 +119,7 @@ class EsamTree:
         '''
         if tree is None:
             tree = []
-        if self.ichan == 0:
+        if self._ichan == 0:
             tree.append([])
             
         tree[level].append(self)
@@ -135,14 +153,27 @@ class EsamTree:
         
         n2 = self.nchan // 2
         if self.nchan == 1:
-            prod = EndProduct(trace[0])
+            #print(f"Got trace as {trace}, giving trace[0] = {trace[0][1]} to EndProduct")
+            prod = EndProduct(trace[0][1])
+            cum_offset = trace[0][0]
         else:
             pid_lower = self.lower.get_trace_pid(trace[:n2])
             pid_upper = self.upper.get_trace_pid(trace[n2:])
-            assert n2 - 1 >= 0
-            mid_offset, _ = trace[n2-1] # offset and width of the lower of the 2 middle channels
+            assert n2 >= 0
+            #pid_lower, offset_lower = self.lower.get_trace_pid(trace[:n2])
+            #pid_upper, offset_upper = self.upper.get_trace_pid(trace[n2:])
+            #assert n2 >= 0
+            #cum_offset = offset_lower + offset_upper
+            #'''
+            mid_offset, _ = trace[n2] # offset and width of the lower of the 2 middle channels
             assert type(mid_offset) == int, f'offset has wrong type {type(mid_offset)} {mid_offset}'
-            prod = IterProduct(pid_upper, pid_lower, mid_offset)
+            if hasattr(self.lower._products[pid_lower], 'offset'):
+                offset = mid_offset + self.lower._products[pid_lower].offset
+            else:
+                offset = mid_offset + 0 
+            #'''
+            #prod = IterProduct(pid_upper, pid_lower, offset_lower)
+            prod = IterProduct(pid_upper, pid_lower, offset)
         
         added = False
         if prod not in self._products:
@@ -152,7 +183,7 @@ class EsamTree:
         pid = self._products.index(prod)
         #print(f'{self} of trace {trace}={prod}=PID{pid} added?={added}')
         
-        return pid
+        return pid#, cum_offset
         
      
     
@@ -164,7 +195,7 @@ class EsamTree:
         if self.nchan == 1:
             assert din.shape[0] == 1, f'Expected 1 channel. Got {din.shape}'
             for iprod, prod in enumerate(self._products):
-                dout[iprod, :] = prod(din) 
+                dout[iprod, :] = prod(din.squeeze()) 
         else:
             nf2 = self.nchan // 2 
             lower = self.lower(din[:nf2,...])
@@ -174,8 +205,22 @@ class EsamTree:
                 #if off > 0:
                 #    dout[iprod, :off] = upper[prod.pid_upper, :off]
                 
-                dout[iprod, off:] = lower[prod.pid_lower, 0:nt-off] \
-                        + upper[prod.pid_upper, off:]
+                if off <= 0:
+                    dout[iprod, -off:] = lower[prod.pid_lower, -off:] + upper[prod.pid_upper, :nt + off]
+                elif off > 0:
+                    #TODO - fix this
+                    raise Exception
+                    dout[iprod, :nt-off] = upper[prod.pid_upper, :nt-off] + lower[prod.pid_lower, off:] 
+
+                #plt.figure()
+                #print(f"self.nchan is {self.nchan}, self._ichan is {self._ichan}, prod.offset is {prod.offset}")
+                #print(f"lower is {lower}")
+                #print(f"upper is {upper}")
+                #print(f"Nprod is {self.nprod}")
+                #plt.imshow(dout, aspect='auto')
+                #plt.show()
+                #dout[iprod, off:] = lower[prod.pid_lower, 0:nt-off] \
+                #        + upper[prod.pid_upper, off:]
             
         return dout                        
     

@@ -1,0 +1,566 @@
+add_noise: false
+furby_props:
+- dm_samps: 0.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 1.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 2.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 3.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 4.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 5.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 6.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 7.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 8.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 9.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 10.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 11.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 12.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 13.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 14.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 15.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 16.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 17.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 18.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 19.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 20.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 21.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 22.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 23.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 24.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 25.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 26.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 27.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 28.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 29.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 30.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 31.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 32.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 33.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 34.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 35.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 36.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 37.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 38.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 39.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 40.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 41.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 42.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 43.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 44.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 45.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 46.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 47.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 48.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 49.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+- dm_samps: 50.0
+  noise_per_sample: 1.0
+  shape: tophat
+  snr: 20.0
+  spectrum: flat
+  subsample_phase: 0.5
+  tau0: 1.0e-16
+  width_samps: 0.0
+injection_pixels:
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+- - 128.0
+  - 128.0
+injection_tsamps:
+- 76
+- 332
+- 588
+- 844
+- 1100
+- 1356
+- 1612
+- 1868
+- 2124
+- 2380
+- 2636
+- 2892
+- 3148
+- 3404
+- 3660
+- 3916
+- 4172
+- 4428
+- 4684
+- 4940
+- 5196
+- 5452
+- 5708
+- 5964
+- 6220
+- 6476
+- 6732
+- 6988
+- 7244
+- 7500
+- 7756
+- 8012
+- 8268
+- 8524
+- 8780
+- 9036
+- 9292
+- 9548
+- 9804
+- 10060
+- 10316
+- 10572
+- 10828
+- 11084
+- 11340
+- 11596
+- 11852
+- 12108
+- 12364
+- 12620
+- 12876
+seed: 777
