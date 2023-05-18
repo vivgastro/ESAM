@@ -14,6 +14,7 @@ def mask_to_trace(mask):
     Takes a 2-D numpy array containing the cells that have to be summed
     and makes a trace out of it
     '''
+    print(f"mask_to_trace got mask = {mask}")
     trace = []
     prev_off = 0
     nchan = len(mask)
@@ -30,7 +31,8 @@ def mask_to_trace(mask):
         prev_off = idxs[0]
 
         trace.append([offset, kernel])
-    trace[0][0] = None
+    #trace[0][0] = 0
+    print(f"mask_to_trace is returning trace {trace}")
     return trace
 
 def digitize_trace(trace, nbits=1):

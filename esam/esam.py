@@ -2,11 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class IterProduct:
-    def __init__(self, pid_lower, pid_upper, offset, cumsum):
+    def __init__(self, pid_lower, pid_upper, offset):
         self.pid_lower = pid_lower
         self.pid_upper = pid_upper
         self.offset = offset
-        self.cumsum = cumsum
 
     def __str__(self):
         s = f"IterProduct with pid_lower={self.pid_lower}, pid_upper={self.pid_upper}, offset={self.offset}"
@@ -71,7 +70,21 @@ class EndProduct:
         '''
         return out 
 
-    
+
+def sum_offsets(trace):
+    #print(f"sum_offsets got trace {trace}")
+    osum = 0
+    nchan = len(trace)
+    for ichan in range(nchan):
+        #print(f"chan in trace is {trace[ichan]}")
+        if ichan == 0:
+            #If this the 0th channel in the trace, then it's offset wouldn't have been adjusted yet
+            pass
+        else:
+            osum += trace[ichan][0]
+    #print(f"Returning osum = {osum}")
+    return osum
+
 
 class EsamTree:
     def __init__(self, nchan, ichan = 0):
@@ -150,12 +163,13 @@ class EsamTree:
         trace:list of nchan values. Each value is tuple(width, offset)'
         '''
         assert len(trace) == self.nchan, f'Unexpedcted trace length in {self}. Was {len(trace)} expected {self.nchan}'
-        
         n2 = self.nchan // 2
         if self.nchan == 1:
             #print(f"Got trace as {trace}, giving trace[0] = {trace[0][1]} to EndProduct")
             prod = EndProduct(trace[0][1])
-            cum_offset = trace[0][0]
+            mid_offset = None
+            offsets_added_so_far = None
+            #cum_offset = trace[0][0]
         else:
             pid_lower = self.lower.get_trace_pid(trace[:n2])
             pid_upper = self.upper.get_trace_pid(trace[n2:])
@@ -166,15 +180,20 @@ class EsamTree:
             #cum_offset = offset_lower + offset_upper
             #'''
             mid_offset, _ = trace[n2] # offset and width of the lower of the 2 middle channels
+            offsets_added_so_far = sum_offsets(trace[:n2])
+
+            offset = mid_offset + offsets_added_so_far
+
             assert type(mid_offset) == int, f'offset has wrong type {type(mid_offset)} {mid_offset}'
-            if hasattr(self.lower._products[pid_lower], 'offset'):
-                offset = mid_offset + self.lower._products[pid_lower].offset
-            else:
-                offset = mid_offset + 0 
+            #if hasattr(self.lower._products[pid_lower], 'offset'):
+            #    offset = mid_offset + self.lower._products[pid_lower].offset
+            #else:
+            #    offset = mid_offset + 0 
             #'''
             #prod = IterProduct(pid_upper, pid_lower, offset_lower)
             prod = IterProduct(pid_upper, pid_lower, offset)
         
+        print(f"self.nchan = {self.nchan}, self._ichan = {self._ichan}, trace = {trace}, mid_offset = {mid_offset}, offsets_added_so_far={offsets_added_so_far}") 
         added = False
         if prod not in self._products:
             self._products.append(prod)
@@ -213,9 +232,10 @@ class EsamTree:
                     dout[iprod, :nt-off] = upper[prod.pid_upper, :nt-off] + lower[prod.pid_lower, off:] 
 
                 #plt.figure()
-                #print(f"self.nchan is {self.nchan}, self._ichan is {self._ichan}, prod.offset is {prod.offset}")
-                #print(f"lower is {lower}")
-                #print(f"upper is {upper}")
+                print(f"self.nchan is {self.nchan}, self._ichan is {self._ichan}, prod.offset is {prod.offset}")
+                print(f"upper is {upper}")
+                print(f"lower is {lower}")
+                print(f"dout  is {dout}")
                 #print(f"Nprod is {self.nprod}")
                 #plt.imshow(dout, aspect='auto')
                 #plt.show()

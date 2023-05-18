@@ -8,8 +8,10 @@ import argparse
 import matplotlib.pyplot as plt
 
 def populate_ESAM_tree_with_masks(esam_tree, masks):
+    print(f"populatate_ESAM_tree_with_masks called with args esam_tree = {esam_tree}, masks = {masks}")
     trace_ids = []
     for mask in masks:
+        print(f"Mask in masks gives {mask}")
         if mask.ndim == 3:
             mask = mask.sum(axis=0).real    #Data must be nbl, nf, nt shape, so sum along the bl axis
             #mask = mask[::-1]
@@ -81,17 +83,17 @@ def main():
             ax[0].imshow(data, aspect='auto')
             ax[0].set_xlabel("time")
             ax[0].set_ylabel("chan")
-            ax[0].set_title("frb")
+            ax[0].set_title(f"frb, true_sum = {data.sum()}")
 
             ax[1].imshow(fdmtout, aspect='auto', interpolation='None')
             ax[1].set_xlabel("time")
             ax[1].set_ylabel("fdmt_dm_trial")
-            ax[1].set_title("fdmt")
+            ax[1].set_title(f"fdmt, fdmt_peak = {fdmtout.max()}")
 
             ax[2].imshow(esamout, aspect='auto', interpolation='None')
             ax[2].set_xlabel("time")
             ax[2].set_ylabel("product id")
-            ax[2].set_title("esam")
+            ax[2].set_title(f"esam, esam_peak = {esamout.max()}")
             plt.show()
 
     plt.figure()
