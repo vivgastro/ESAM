@@ -82,7 +82,7 @@ def sum_offsets(trace):
             pass
         else:
             osum += trace[ichan][0]
-    #print(f"Returning osum = {osum}")
+    print(f"Returning osum = {osum}")
     return osum
 
 
@@ -191,7 +191,7 @@ class EsamTree:
             #    offset = mid_offset + 0 
             #'''
             #prod = IterProduct(pid_upper, pid_lower, offset_lower)
-            prod = IterProduct(pid_upper, pid_lower, offset)
+            prod = IterProduct(pid_lower, pid_upper, offset)
         
         print(f"self.nchan = {self.nchan}, self._ichan = {self._ichan}, trace = {trace}, mid_offset = {mid_offset}, offsets_added_so_far={offsets_added_so_far}") 
         added = False
@@ -214,29 +214,34 @@ class EsamTree:
         if self.nchan == 1:
             assert din.shape[0] == 1, f'Expected 1 channel. Got {din.shape}'
             for iprod, prod in enumerate(self._products):
-                dout[iprod, :] = prod(din.squeeze()) 
+                dout[iprod, :] = prod(din[0])   #din[0] because din is a 1-D data but has 2-D shape (nf, nt) where nf = 1 
         else:
             nf2 = self.nchan // 2 
             lower = self.lower(din[:nf2,...])
             upper = self.upper(din[nf2:,...])
             for iprod, prod in enumerate(self._products):
+                #--print(f"self.nchan is {self.nchan}, self._ichan is {self._ichan}, prod.offset is {prod.offset}")
+                #--print(f"upper is {upper}")
+                #--print(f"lower is {lower}")
+
+                #print(f"Nprod is {self.nprod}")
+                
                 off = prod.offset
                 #if off > 0:
                 #    dout[iprod, :off] = upper[prod.pid_upper, :off]
                 
                 if off <= 0:
-                    dout[iprod, -off:] = lower[prod.pid_lower, -off:] + upper[prod.pid_upper, :nt + off]
+                    dout[iprod, :] = lower[prod.pid_lower, :]
+                    dout[iprod, -off:] += upper[prod.pid_upper, :nt+off]
+
+                    #dout[iprod, -off:] = lower[prod.pid_lower, -off:] + upper[prod.pid_upper, :nt + off]
                 elif off > 0:
                     #TODO - fix this
-                    raise Exception
+                    raise NotImplementedError
                     dout[iprod, :nt-off] = upper[prod.pid_upper, :nt-off] + lower[prod.pid_lower, off:] 
-
+                #--print(f"dout  is {dout}")
+                #--print(f"dout.shape is {dout.shape}")
                 #plt.figure()
-                print(f"self.nchan is {self.nchan}, self._ichan is {self._ichan}, prod.offset is {prod.offset}")
-                print(f"upper is {upper}")
-                print(f"lower is {lower}")
-                print(f"dout  is {dout}")
-                #print(f"Nprod is {self.nprod}")
                 #plt.imshow(dout, aspect='auto')
                 #plt.show()
                 #dout[iprod, off:] = lower[prod.pid_lower, 0:nt-off] \

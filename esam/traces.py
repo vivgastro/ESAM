@@ -14,7 +14,7 @@ def mask_to_trace(mask):
     Takes a 2-D numpy array containing the cells that have to be summed
     and makes a trace out of it
     '''
-    print(f"mask_to_trace got mask = {mask}")
+    print(f"mask_to_trace got mask =\n{mask}")
     trace = []
     prev_off = 0
     nchan = len(mask)
