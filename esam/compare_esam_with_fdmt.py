@@ -8,21 +8,27 @@ import argparse
 import matplotlib.pyplot as plt
 
 def populate_ESAM_tree_with_masks(esam_tree, masks):
-    print(f"populatate_ESAM_tree_with_masks called with args esam_tree = {esam_tree}, masks = {masks}")
+    print(f"populatate_ESAM_tree_with_masks called")# with args esam_tree = {esam_tree}, masks = {masks}"
     trace_ids = []
-    for mask in masks:
-        print(f"Mask in masks gives {mask}")
+    for imask, mask in enumerate(masks):
+        #print(f"Mask in masks gives {mask}")
         if mask.ndim == 3:
             mask = mask.sum(axis=0).real    #Data must be nbl, nf, nt shape, so sum along the bl axis
             #mask = mask[::-1]
+        plt.figure()
+        plt.imshow(mask, aspect='auto', origin='lower')
+        plt.title(str(imask))
+        plt.show()
         trace = mask_to_trace(mask)
         #print(f"Trace is {trace}")
         trace = digitize_trace(trace)
         #print(f"Digitized trace is {trace}")
+        print(f"Calling esam_tree.get_trace_pid for imask {imask}")
         trace_id = esam_tree.get_trace_pid(trace)
         #print(f"Trace id is {trace_id}")
         trace_ids.append(trace_id)
 
+    print(f"I should have populated the tree with {len(trace_ids)} trace_ids")
     return trace_ids
 
 def get_fake_block(nf =8 , nt = 16):
@@ -57,6 +63,10 @@ def main():
 
     esam_tree = EsamTree(plan.nf)
     trace_ids = populate_ESAM_tree_with_masks(esam_tree, blocker)
+    all_pids = [[] for i in range(int(np.log2(plan.nf)) + 1)]
+    esam_tree.get_all_pids(all_pids)
+    print(f"All pids are:\n{all_pids}")
+    print(f"Tree descriptor is {esam_tree.descriptor_tree()}")
 
     blocker = FV(plan, args.injection_file).get_fake_data_block()
     #blocker = get_fake_block(nf = my_nf)
@@ -65,6 +75,7 @@ def main():
     fdmt_signals = []
     esam_signals = []
     for iblock, block in enumerate(blocker):
+        print(f"===========================================================================iblock = {iblock}")
         if block.ndim == 3:
             data = block.real.sum(axis=0)
         else:
