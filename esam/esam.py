@@ -53,8 +53,6 @@ class EndProduct:
         din: np.ndarray
             1-D array on which the Endproduct has to be executed
         '''
-        #print(type(din), type(self.kernel))
-        #print( din.shape, self.kernel.shape)
         out = np.zeros_like(din)
         kernel_size = len(self.kernel)
         for isamp in range(din.size):
@@ -220,9 +218,9 @@ class EsamTree:
             lower = self.lower(din[:nf2,...])
             upper = self.upper(din[nf2:,...])
             for iprod, prod in enumerate(self._products):
-                #--print(f"self.nchan is {self.nchan}, self._ichan is {self._ichan}, prod.offset is {prod.offset}")
-                #--print(f"upper is {upper}")
-                #--print(f"lower is {lower}")
+                print(f"self.nchan is {self.nchan}, self._ichan is {self._ichan}, prod.offset is {prod.offset}")
+                print(f"upper is {upper}")
+                print(f"lower is {lower}")
 
                 #print(f"Nprod is {self.nprod}")
                 
@@ -230,17 +228,21 @@ class EsamTree:
                 #if off > 0:
                 #    dout[iprod, :off] = upper[prod.pid_upper, :off]
                 
+                dout[iprod, :] = lower[prod.pid_lower, :]
                 if off <= 0:
-                    dout[iprod, :] = lower[prod.pid_lower, :]
                     dout[iprod, -off:] += upper[prod.pid_upper, :nt+off]
 
                     #dout[iprod, -off:] = lower[prod.pid_lower, -off:] + upper[prod.pid_upper, :nt + off]
                 elif off > 0:
+                    dout[iprod, :nt-off] += upper[prod.pid_upper, off:]
+                    
+                    
                     #TODO - fix this
-                    raise NotImplementedError
-                    dout[iprod, :nt-off] = upper[prod.pid_upper, :nt-off] + lower[prod.pid_lower, off:] 
-                #--print(f"dout  is {dout}")
-                #--print(f"dout.shape is {dout.shape}")
+                    #raise NotImplementedError
+                    #dout[iprod, :nt-off] = upper[prod.pid_upper, :nt-off] + lower[prod.pid_lower, off:] 
+
+                print(f"dout  is {dout}")
+                print(f"dout.shape is {dout.shape}")
                 #plt.figure()
                 #plt.imshow(dout, aspect='auto')
                 #plt.show()
