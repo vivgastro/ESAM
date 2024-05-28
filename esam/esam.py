@@ -80,7 +80,7 @@ def sum_offsets(trace):
             pass
         else:
             osum += trace[ichan][0]
-    print(f"Returning osum = {osum}")
+    #print(f"Returning osum = {osum}")
     return osum
 
 
@@ -140,13 +140,16 @@ class EsamTree:
         
         return tree              
     
-    def get_all_pids(self, all_pids):
+    def get_all_pids(self, all_pids = None):
         '''
         Makes a list of lists containing all PIDs for each iteration
         Modifies the provided 'all_pids' list in place
         '''
+        if all_pids is None:
+            all_pids = [[] for i in range(int(np.log2(self.nchan)) + 1) ]
 
         list_idx = int(np.log2(self.nchan))
+
         if self.nchan == 1:
             all_pids[list_idx].extend(self._products)
         else:
@@ -154,7 +157,28 @@ class EsamTree:
             self.upper.get_all_pids(all_pids)
             self.lower.get_all_pids(all_pids)
 
+        return all_pids
     
+    def count_all_pids(self, pid_counts = None):
+        '''
+        Counts the number of products in each iteration and saves them in a list
+        '''
+
+        if pid_counts is None:
+            pid_counts = [0 for i in range(int(np.log2(self.nchan)) + 1) ]
+
+        list_idx = int(np.log2(self.nchan))
+
+        #print(f"{pid_counts}, {type(pid_counts)}, {pid_counts[list_idx]}, {type(pid_counts[list_idx])}")
+        pid_counts[list_idx] += len(self._products)
+        
+        if self.nchan > 1:
+            self.lower.count_all_pids(pid_counts)
+            self.upper.count_all_pids(pid_counts)
+
+        return pid_counts
+
+
     def get_trace_pid(self, trace) -> int:
         '''
         Returns the product ID for the given trace
@@ -191,7 +215,7 @@ class EsamTree:
             #prod = IterProduct(pid_upper, pid_lower, offset_lower)
             prod = IterProduct(pid_lower, pid_upper, offset)
         
-        print(f"self.nchan = {self.nchan}, self._ichan = {self._ichan}, trace = {trace}, mid_offset = {mid_offset}, offsets_added_so_far={offsets_added_so_far}") 
+        #print(f"self.nchan = {self.nchan}, self._ichan = {self._ichan}, trace = {trace}, mid_offset = {mid_offset}, offsets_added_so_far={offsets_added_so_far}") 
         added = False
         if prod not in self._products:
             self._products.append(prod)
@@ -218,9 +242,9 @@ class EsamTree:
             lower = self.lower(din[:nf2,...])
             upper = self.upper(din[nf2:,...])
             for iprod, prod in enumerate(self._products):
-                print(f"self.nchan is {self.nchan}, self._ichan is {self._ichan}, prod.offset is {prod.offset}")
-                print(f"upper is {upper}")
-                print(f"lower is {lower}")
+                #print(f"self.nchan is {self.nchan}, self._ichan is {self._ichan}, prod.offset is {prod.offset}")
+                #print(f"upper is {upper}")
+                #print(f"lower is {lower}")
 
                 #print(f"Nprod is {self.nprod}")
                 
@@ -241,8 +265,8 @@ class EsamTree:
                     #raise NotImplementedError
                     #dout[iprod, :nt-off] = upper[prod.pid_upper, :nt-off] + lower[prod.pid_lower, off:] 
 
-                print(f"dout  is {dout}")
-                print(f"dout.shape is {dout.shape}")
+                #print(f"dout  is {dout}")
+                #print(f"dout.shape is {dout.shape}")
                 #plt.figure()
                 #plt.imshow(dout, aspect='auto')
                 #plt.show()
