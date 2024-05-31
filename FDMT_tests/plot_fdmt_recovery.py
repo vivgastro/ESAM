@@ -8,7 +8,10 @@ def main():
     ax = f.add_subplot(111)
     for fname in args.fname:
         results = pd.read_csv(fname, sep='\s+')
-        ax.plot(results['DM'], results['BZ_FDMT_snr'] / results['Max_snr'])
+        ax.plot(results['DM'], results['BZ_FDMT_snr'] / results['Max_snr'], label=fname)
+    plt.legend()
+    plt.xlabel("DM [samples]")
+    plt.ylabel("Fraction of S/N recovered")
     plt.show()
 
 if __name__ == '__main__':
