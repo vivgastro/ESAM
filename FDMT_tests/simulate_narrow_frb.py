@@ -1,9 +1,9 @@
 import numpy as np
 import numba
-from numba import njit
+from numba import njit, prange
 
 
-@njit(fastmath=True, locals={'val':numba.float32, 'tot_samps_dispersed':numba.int16})
+@njit(fastmath=True, locals={'val':numba.float32, 'tot_samps_dispersed':numba.int16}, parallel=True)
 def make_pure_frb(nsamps, nch, tx, dm, fchans, chw_2, tpulse):
     x = np.empty((nch, nsamps), dtype=np.float32)
     fbottom = fchans[0] - chw_2
@@ -17,7 +17,7 @@ def make_pure_frb(nsamps, nch, tx, dm, fchans, chw_2, tpulse):
     '''
     tot_samps_dispersed = 0
     
-    for ii in range(nch):
+    for ii in prange(nch):
         ftop_i = fchans[ii] + chw_2
         fbottom_i = fchans[ii] - chw_2
         
@@ -45,7 +45,7 @@ def make_pure_frb(nsamps, nch, tx, dm, fchans, chw_2, tpulse):
             frac_val_tend = tend_frac / dm_i * fluence
             full_samp_val = fluence * (1 / dm_i)
         
-        for jj in range(nsamps):
+        for jj in prange(nsamps):
             if jj == tstart_int:
                 val = frac_val_tstart
                 tot_samps_dispersed = tot_samps_dispersed + 1
