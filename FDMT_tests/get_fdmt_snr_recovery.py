@@ -4,6 +4,7 @@ from craft import fdmt as FDMT
 import sys
 sys.path.append("/home/gup037/Codes/ESAM/FDMT_tests/Baraks_FDMT/")
 import FDMT_no_correction as BZ_FDMT
+#import FDMT as BZ_FDMT
 import numba
 sys.path.append("/home/gup037/Codes/ESAM/FDMT_tests/")
 import simulate_narrow_frb as snf
@@ -39,12 +40,13 @@ def main():
 
     #f = open("fdmt_performance_nch_128_0_to_4000_with_bz_spp0.5.txt", 'w')
     f = open(outname, 'w')
-    f.write("DM\tMax_snr\tFDMT_dm\tFDMT_snr\tBZ_FDMT_dm\tBZ_FDMT_snr\n")
+    f.write("DM\tMF_snr\tMax_snr\tFDMT_dm\tFDMT_snr\tBZ_FDMT_dm\tBZ_FDMT_snr\n")
     ones = np.ones((nch, nsamps), dtype=np.float32)
     bz_fdmt_ones = BZ_FDMT.FDMT(ones,  fchans[0] - chw_2, fchans[-1] + chw_2, max_dm_searched, np.float32)
     for idm in dm_trials:
         x, tot_samps = snf.make_pure_frb(nsamps, nch, tx, idm, fchans, chw_2, tpulse)
         max_snr = np.sum(x) / np.sqrt(tot_samps)
+        mf_snr = np.sqrt(np.sum(x**2))
         
         bz_fdmt = BZ_FDMT.FDMT(x, fchans[0] - chw_2, fchans[-1] + chw_2, max_dm_searched, np.float32)
         bz_fdmt_peak_dm, bz_fdmt_peak_time = np.unravel_index(np.argmax(bz_fdmt), bz_fdmt.shape)
@@ -55,7 +57,7 @@ def main():
         fdmt_peak_dm, _ = np.unravel_index(np.argmax(dx), dx.shape)
         fdmt_snr = np.max(dx) / thefdmt.get_eff_sigma(fdmt_peak_dm, 1)
 
-        out_str = f"{idm:.2f}\t{max_snr:.2f}\t{fdmt_peak_dm}\t{fdmt_snr:.2f}\t{bz_fdmt_peak_dm:.2f}\t{bz_fdmt_snr:.2f}\n"
+        out_str = f"{idm:.2f}\t{mf_snr:.2f}\t{max_snr:.2f}\t{fdmt_peak_dm}\t{fdmt_snr:.2f}\t{bz_fdmt_peak_dm:.2f}\t{bz_fdmt_snr:.2f}\n"
         f.write(out_str)
         print(idm)
     f.close()
