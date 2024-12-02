@@ -6,7 +6,9 @@ def digitize_array(arr, levels):
 
 
 def digitize_as_binary(arr):
-    return np.ones_like(arr)
+    d = np.zeros_like(arr)
+    d[arr > 0] = 1
+    return d
 
 '''
 def mask_to_trace(mask):
