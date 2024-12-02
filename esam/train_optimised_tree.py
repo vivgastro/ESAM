@@ -5,6 +5,9 @@ import esam, traces
 sys.path.append("/home/gup037/Codes/ESAM/FDMT_tests")
 import simulate_narrow_frb as snf
 
+sys.path.append("/home/gup037/Codes/ESAM/FDMT_tests/Keiths_FDMT")
+from noc_fdmt import Fdmt as NOC_FDMT
+
 from craft import fdmt as FDMT
 import numpy as np
 import IPython
@@ -59,11 +62,13 @@ def main():
     dm_templates = np.arange(0, max_dm, dm_step)
 
     tree = esam.EsamTree(nch)
-    thefdmt = FDMT.Fdmt(f_min= fchans[0], f_off = chw_2 * 2, n_f = nch, max_dt = dm_templates[-1]+1, n_t = nsamps)
+    #thefdmt = FDMT.Fdmt(f_min= fchans[0], f_off = chw_2 * 2, n_f = nch, max_dt = dm_templates[-1]+1, n_t = nsamps)
+    thefdmt = NOC_FDMT(f_min= fchans[0], f_off = chw_2 * 2, n_f = nch, max_dt = dm_templates[-1]+1, n_t = nsamps)
             
     #product_counts = np.zeros((len(dm_templates), len(tree.count_all_pids())))
 
     outbasename = f"final_optimised_esam_tree_fast_with_traces_0_{max_dm}_{dm_step}_nch256_threshold_{threshold}.pkl"
+    #outbasename = f"final_optimised_fdmt_tree_fast_with_traces_0_{max_dm}_{dm_step}_nch256_threshold_{threshold}.pkl"
 
     product_id_to_dm_map = open(f"prod_to_dm_map_for_{outbasename}.txt", 'w')
     product_id_to_dm_map.write(f"prod_id\tDM\n")
@@ -82,12 +87,13 @@ def main():
         nsamps = max(int(idm + 20), 100)
         tpulse = nsamps - 5.5
         x, tot_samps_added = snf.make_pure_frb(nsamps, nch, tx, idm, fchans, chw_2, tpulse)
-        #x = thefdmt.add_frb_track(idm, np.zeros((nch, nsamps)), toffset = 1)
+        #x = thefdmt.add_frb_track(int(idm), np.zeros((nch, nsamps)), toffset = 1)
+        tot_samps_added = len(x[x>0])
         #print(f"Sum = {np.sum(x)}, Total samps added in pure frb = {tot_samps_added}")
         max_snr = np.sum(x) / np.sqrt(tot_samps_added)
         if tree.nprod > 0:
             peak_snr = evaluate_tree_performance(tree, x)
-            #print(f"({peak_snr}, {max_snr})")
+            #print(f"({peak_snr}, {maxx_snr})")
         else:
             peak_snr = -np.inf
         print(f"{ii} - dm = {idm:.2f} - {(peak_snr / max_snr):.2f}")
@@ -105,13 +111,14 @@ def main():
             brute_force_operations_counter += tot_samps_added - 1
             brute_force_operation_counts.write(f"{pid + 1}\t{idm}\t{brute_force_operations_counter}\n")
 
+            IPython.embed()
         else:
             print(f"Skipped")
             #print(f"Template id {ii} with dm {idm} can be recovered by the tree with {(peak_snr / max_snr) * 100}%  recovery, which is above the threshold - {threshold * 100}%")
     
 
         #Dump the tree every 100 templates
-        if (ii > 0) and (ii % 100 == 0):
+        if (ii > 0) and (ii % 5 == 0):
             print("Flishing stuff to disk")
             np.save(outbasename, tree)
             product_counts.flush()
