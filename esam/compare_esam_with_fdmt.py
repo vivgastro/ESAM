@@ -110,7 +110,8 @@ def main():
     my_nf = plan.nf
     '''
     my_nf = 256
-    blocker = yield_injected_blocks(1234, args.injection_file, args.tel_params_file, 999)
+    my_nt = 256
+    blocker = yield_injected_blocks(my_nt, args.injection_file, args.tel_params_file, 999)
     #blocker = get_fake_block(nf = my_nf)
 
     esam_tree = EsamTree(my_nf)
@@ -137,9 +138,9 @@ def main():
     #print(f"Tree descriptor is {esam_tree.descriptor_tree()}")
 
     #blocker = FV(plan, args.injection_file).get_fake_data_block()
-    blocker = yield_injected_blocks(1234, args.injection_file, args.tel_params_file, 999)
+    blocker = yield_injected_blocks(my_nt, args.injection_file, args.tel_params_file, 999)
     #blocker = get_fake_block(nf = my_nf)
-    thefdmt = FDMT.Fdmt(f_min = fmin, f_off = chw, n_f = tel_params['nch'], max_dt =args.ndm, n_t = 1234, history_dtype=np.float64)
+    thefdmt = FDMT.Fdmt(f_min = fmin, f_off = chw, n_f = tel_params['nch'], max_dt =args.ndm, n_t = my_nt, history_dtype=np.float64)
     #thefdmt = FDMT.Fdmt(f_min = plan.fmin, f_off = plan.foff, n_f = plan.nf, max_dt = plan.nd, n_t = plan.nt, history_dtype=np.float64)
     fdmt_trace_ids, fdmt_pid_counts = populate_FDMT_ESAM_tree_with_dm_traces(fdmt_esam_tree, thefdmt)
     
@@ -160,11 +161,19 @@ def main():
     plt.show()
     
     true_signals = []
+    true_snrs = []
     fdmt_signals = []
+    fdmt_snrs = []
     esam_signals = []
+    esam_snrs = []
+
+    ones = np.ones((my_nf, my_nt))
+    ones_fdmt = thefdmt(ones)
+    ones_esam = esam_tree(ones)
+
     for iblock, block in enumerate(blocker):
-        if iblock % 100!= 0:
-            continue
+        #if iblock % 100!= 0:
+        #    continue
         print(f"===========================================================================iblock = {iblock}")
         if block.ndim == 3:
             data = block.real.sum(axis=0)
@@ -173,9 +182,17 @@ def main():
         fdmtout = thefdmt(data)
         esamout = esam_tree(data)
 
+
+        fdmt_peak_dm, fdmt_peak_time = np.unravel_index(np.argmax(fdmtout), fdmtout.shape)
+        esam_peak_dm, esam_peak_time = np.unravel_index(np.argmax(esamout), fdmtout.shape)
+        esam_peak_loc = np.argmax(esamout)
+
         true_signals.append(data.sum())
+        true_snrs.append(np.sqrt(np.sum(data**2)))
         fdmt_signals.append(fdmtout.max())
+        fdmt_snrs.append(fdmtout.max() / np.sqrt(ones_fdmt[fdmt_peak_dm, fdmt_peak_time]))
         esam_signals.append(esamout.max())
+        esam_snrs.append(esamout.max() / np.sqrt(ones_esam[esam_peak_dm, esam_peak_time]))
 
     
         if args.plot:
@@ -201,6 +218,9 @@ def main():
     true_signals = np.array(true_signals)
     fdmt_signals = np.array(fdmt_signals)
     esam_signals = np.array(esam_signals)
+    true_snrs = np.array(true_snrs)
+    fdmt_snrs = np.array(fdmt_snrs)
+    esam_snrs = np.array(esam_snrs)
     plt.figure()
     plt.plot(true_signals/true_signals, label="True")
     plt.plot(fdmt_signals/true_signals, label="FDMT")
@@ -208,6 +228,16 @@ def main():
     plt.legend()
     plt.ylabel("Signal recovery fraction")
     plt.xlabel("DM / trace trial")
+    
+    
+    plt.figure()
+    plt.plot(true_snrs/true_snrs, label="True")
+    plt.plot(fdmt_snrs/true_snrs, label="FDMT")
+    plt.plot(esam_snrs/true_snrs, label="ESAM", marker='X')
+    plt.legend()
+    plt.ylabel("S/N recovery fraction")
+    plt.xlabel("DM / trace trial")
+    
     plt.show()
 
 
