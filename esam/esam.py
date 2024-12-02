@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 class IterProduct:
     def __init__(self, pid_lower, pid_upper, offset):
         self.pid_lower = pid_lower
@@ -31,8 +32,9 @@ class IterProduct:
         off = self.offset
 
 class EndProduct:
-    def __init__(self, kernel):
+    def __init__(self, kernel, similarity_score=None):
         self.kernel = kernel
+        self.similarity_score = similarity_score
         
     def __str__(self):
         s = f'EndProduct kernel={self.kernel}'
@@ -43,11 +45,20 @@ class EndProduct:
         Need this otherwise we keep adding the same kernel at the bottom level
         '''    
         iseq = np.array_equal(self.kernel, other.kernel)
+        
+        if self.similarity_score is not None:
+            conv = np.convolve(self.kernel, other.kernel)
+            sq_weights = np.sqrt(np.sum(self.kernel**2))
+            matched_filter_snr = np.max(conv) / sq_weights
+            expected_snr = np.sqrt(np.sum(other.kernel**2))
+            if matched_filter_snr / expected_snr > self.similarity_score:
+                iseq = True
+
         return iseq
     
     __repr__ = __str__
 
-    def __call__(self, din):
+    def __call__(self, din, squared_weights = False):
         '''
         Implements the execution of the EndProduct on the data
         din: np.ndarray
@@ -58,7 +69,11 @@ class EndProduct:
         for isamp in range(din.size):
             if isamp + kernel_size-1 == din.size:
                 break
-            out[isamp] = np.sum(din[isamp : isamp + kernel_size] * self.kernel)
+            if squared_weights:
+                weights = self.kernel**2
+            else:
+                weights = self.kernel
+            out[isamp] = np.sum(din[isamp : isamp + kernel_size] * weights)
 
         #out =  np.convolve(din, self.kernel, mode='same')
         '''
@@ -85,10 +100,12 @@ def sum_offsets(trace):
 
 
 class EsamTree:
-    def __init__(self, nchan, ichan = 0):
+    def __init__(self, nchan, ichan = 0, similarity_score = 0.9):
         self._products = [] # list containing Products
         self.nchan = nchan
         self._ichan = ichan
+        #self.similarity_score = 0.9
+        self.similarity_score = None
         assert self.nchan == 1 or self.nchan % 2 == 0, f"EsamTree can only have even number of channels, given = {nchan}"
         
         if nchan == 1:
@@ -158,7 +175,33 @@ class EsamTree:
             self.lower.get_all_pids(all_pids)
 
         return all_pids
-    
+
+    def count_all_operations(self, op_counts = None):
+        '''
+        Counts the number of operations in each iteration and saves them in a list
+        '''
+
+        if op_counts is None:
+            op_counts = [0 for i in range(int(np.log2(self.nchan)) + 1) ]
+
+        list_idx = int(np.log2(self.nchan))
+
+        #print(f"{pid_counts}, {type(pid_counts)}, {pid_counts[list_idx]}, {type(pid_counts[list_idx])}")
+        if list_idx == 0:
+            #Means we are the lowest level - endnodes
+            #Then we should not just count the number of products, but how many sums it will do during the convolution phase as well in each product
+            for iprod in self._products:
+                op_counts[list_idx] += iprod.kernel.size
+        else:
+            op_counts[list_idx] += len(self._products)
+
+        if self.nchan > 1:
+            self.lower.count_all_operations(op_counts)
+            self.upper.count_all_operations(op_counts)
+
+        return op_counts
+
+
     def count_all_pids(self, pid_counts = None):
         '''
         Counts the number of products in each iteration and saves them in a list
@@ -188,7 +231,7 @@ class EsamTree:
         n2 = self.nchan // 2
         if self.nchan == 1:
             #print(f"Got trace as {trace}, giving trace[0] = {trace[0][1]} to EndProduct")
-            prod = EndProduct(trace[0][1])
+            prod = EndProduct(trace[0][1], self.similarity_score)
             mid_offset = None
             offsets_added_so_far = None
             #cum_offset = trace[0][0]
@@ -228,7 +271,8 @@ class EsamTree:
         
      
     
-    def __call__(self, din):
+    def __call__(self, din, squared_weights = False):
+      try:
         assert din.shape[0] == self.nchan
         nt = din.shape[1]
         dout = np.zeros((self.nprod, nt)) # NT here is a bit tricky
@@ -236,11 +280,11 @@ class EsamTree:
         if self.nchan == 1:
             assert din.shape[0] == 1, f'Expected 1 channel. Got {din.shape}'
             for iprod, prod in enumerate(self._products):
-                dout[iprod, :] = prod(din[0])   #din[0] because din is a 1-D data but has 2-D shape (nf, nt) where nf = 1 
+                dout[iprod, :] = prod(din[0], squared_weights)   #din[0] because din is a 1-D data but has 2-D shape (nf, nt) where nf = 1 
         else:
             nf2 = self.nchan // 2 
-            lower = self.lower(din[:nf2,...])
-            upper = self.upper(din[nf2:,...])
+            lower = self.lower(din[:nf2,...], squared_weights)
+            upper = self.upper(din[nf2:,...], squared_weights)
             for iprod, prod in enumerate(self._products):
                 #print(f"self.nchan is {self.nchan}, self._ichan is {self._ichan}, prod.offset is {prod.offset}")
                 #print(f"upper is {upper}")
@@ -272,9 +316,11 @@ class EsamTree:
                 #plt.show()
                 #dout[iprod, off:] = lower[prod.pid_lower, 0:nt-off] \
                 #        + upper[prod.pid_upper, off:]
+        return dout
+      except Exception as E:
+              import IPython
+              IPython.embed()
             
-        return dout                        
-    
     
 def main():
     nchan = 256
