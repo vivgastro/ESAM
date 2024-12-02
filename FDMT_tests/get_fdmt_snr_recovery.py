@@ -34,7 +34,7 @@ def main():
     thefdmt = FDMT.Fdmt(f_min = fchans[0], f_off = chw, n_f = nch, max_dt = max_dm_searched, n_t = nsamps)
 
     if args.outname is None:
-        outname = f"noc_fdmt_performance_nch_{nch}_bw_{args.bw}_{args.dm_min}_to_{args.dm_max}_step_{args.dm_step}_with_bz_spp_{args.spp}.txt"
+        outname = f"final_noc_fdmt_performance_nch_{nch}_bw_{args.bw}_{args.dm_min}_to_{args.dm_max}_step_{args.dm_step}_with_bz_spp_{args.spp}.txt"
     else:
         outname = args.outname
 
